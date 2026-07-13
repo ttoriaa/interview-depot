@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interview Depot Wiki | IT Product & SaaS Integration Cases</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-soft: #eef4f7;
+      --text: #1d2329;
+      --muted: #5e6a75;
+      --line: #d8e0e6;
+      --accent: #0f766e;
+      --accent-strong: #0b4f4a;
+      --blue: #2563eb;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --code: #0f172a;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: #ffffff;
+      padding: 24px 18px;
+    }
+
+    .brand {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    .brand-meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .search-box {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 16px;
+      background: #fbfcfd;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+    }
+
+    .nav-title {
+      margin: 18px 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-list a {
+      display: block;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: #334155;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .nav-list a:hover,
+    .nav-list a.active {
+      background: var(--surface-soft);
+      color: var(--accent-strong);
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .hero {
+      max-width: 1120px;
+      margin: 0 auto 24px;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--accent-strong);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin: 0;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 900px;
+      font-size: 34px;
+      font-weight: 780;
+    }
+
+    h2 {
+      font-size: 27px;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 20px;
+      margin: 22px 0 10px;
+    }
+
+    h4 {
+      font-size: 16px;
+      margin: 18px 0 8px;
+    }
+
+    .lead {
+      max-width: 900px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      padding: 10px 13px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 1120px;
+      margin: 0 auto 24px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 16px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section {
+      max-width: 1120px;
+      margin: 0 auto 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 28px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 720px;
+    }
+
+    .source-label {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      background: #fbfcfd;
+    }
+
+    .toc-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 4px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #e8f3f1;
+      color: var(--accent-strong);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: #fbfcfd;
+    }
+
+    .panel h4 {
+      margin-top: 0;
+    }
+
+    .panel p:last-child,
+    .panel ul:last-child,
+    .panel ol:last-child {
+      margin-bottom: 0;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 16px 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    .quote {
+      border-left: 4px solid var(--accent);
+      background: #eff8f6;
+      border-radius: 0 8px 8px 0;
+      padding: 14px 16px;
+      margin: 14px 0;
+      color: #173f3b;
+    }
+
+    .quote p {
+      margin: 0;
+    }
+
+    .flow {
+      overflow-x: auto;
+      margin: 14px 0;
+      border-radius: var(--radius);
+      background: var(--code);
+      color: #e5edf5;
+      padding: 16px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 14px 0 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      background: #fff;
+    }
+
+    th,
+    td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f1f5f7;
+      color: #25313d;
+      font-weight: 750;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .image-frame {
+      margin: 16px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .image-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .tag {
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: #edf2ff;
+      color: #1e3a8a;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .tag.green {
+      background: #e8f5ed;
+      color: var(--green);
+    }
+
+    .tag.amber {
+      background: #fff4e4;
+      color: var(--amber);
+    }
+
+    .tag.red {
+      background: #feecec;
+      color: var(--red);
+    }
+
+    .callout {
+      border: 1px solid #b7d8d4;
+      border-radius: var(--radius);
+      background: #f0fbfa;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .callout strong {
+      color: var(--accent-strong);
+    }
+
+    .page-footer {
+      max-width: 1120px;
+      margin: 0 auto 32px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .hidden-by-search {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .content {
+        padding: 18px;
+      }
+
+      .hero,
+      .section {
+        padding: 22px;
+      }
+
+      .meta-grid,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header {
+        display: block;
+      }
+
+      .source-label {
+        display: inline-flex;
+        margin-top: 12px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      h2 {
+        font-size: 23px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .app-shell {
+        display: block;
+      }
+
+      .sidebar,
+      .hero-actions,
+      .search-box {
+        display: none;
+      }
+
+      .content {
+        padding: 0;
+      }
+
+      .hero,
+      .section,
+      .metric {
+        box-shadow: none;
+        border-color: #ddd;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-title">Interview Depot Wiki</div>
+        <div class="brand-meta">GitHub Wiki 静态网页版</div>
+        <div class="brand-meta">Source: ttoriaa/interview-depot</div>
+      </div>
+
+      <input id="searchBox" class="search-box" type="search" placeholder="搜索 page / case / 技术关键词" aria-label="搜索内容" />
+
+      <div class="nav-title">Pages</div>
+      <ul class="nav-list">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#use-case">Use case</a></li>
+        <li><a href="#saas-data">SaaS 数据集成</a></li>
+        <li><a href="#lifecycle">全球 IT 服务全生命周期管理</a></li>
+        <li><a href="#software-hardware">纯软件应用与软硬集成服务交付</a></li>
+      </ul>
+
+      <div class="nav-title">Key Sections</div>
+      <ul class="nav-list">
+        <li><a href="#methods">B 端开发方法</a></li>
+        <li><a href="#agile">Agile / Scrum / MVP</a></li>
+        <li><a href="#saas-overview">海外 SaaS 集成</a></li>
+        <li><a href="#auto-case">汽车用户行为分析平台</a></li>
+        <li><a href="#data-pipeline">数据处理 Pipeline</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <section class="hero" id="top">
+        <div class="eyebrow">GitHub Wiki to Web Page</div>
+        <h1>全球 IT 产品、SaaS 集成与数据平台 Use Case 面试知识库</h1>
+        <p class="lead">基于 ttoriaa/interview-depot Wiki 页面整理，将 B 端产品方法论、海外 SaaS 数据集成、汽车用户行为分析平台、全生命周期管理、纯软件与软硬集成交付集中成一个可浏览、可搜索、可打印的静态页面。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#use-case">查看 Use Case</a>
+          <a class="button" href="#saas-data">查看 SaaS 数据集成</a>
+          <button class="button" type="button" onclick="window.print()">打印 / 导出 PDF</button>
+        </div>
+      </section>
+
+      <section class="meta-grid" aria-label="页面概览">
+        <div class="metric"><strong>5</strong><span>Wiki pages consolidated</span></div>
+        <div class="metric"><strong>3</strong><span>核心案例方向</span></div>
+        <div class="metric"><strong>7</strong><span>产品生命周期阶段</span></div>
+        <div class="metric"><strong>3</strong><span>SaaS 数据接入方式</span></div>
+      </section>
+
+      <section class="section page-section" id="home" data-title="Home 全球市场主流 B 端应用产品 开发流程 方法 Agile Scrum ITIL DevOps CI CD MVP SaaS 集成 AWS S3 Glue Power BI">
+        <div class="section-header">
+          <div>
+            <h2>Home</h2>
+            <p>原 Wiki 首页内容，覆盖全球 B 端应用产品开发方法、Agile/Scrum、Waterfall + Agile、ITIL、DevOps、CI/CD、MVP，以及主流海外 SaaS 集成经验。</p>
+          </div>
+          <span class="source-label">Page: Home.md</span>
+        </div>
+
+        <div class="toc-chips">
+          <span class="chip">B 端产品</span>
+          <span class="chip">Agile / Scrum</span>
+          <span class="chip">ITIL</span>
+          <span class="chip">DevOps</span>
+          <span class="chip">CI/CD</span>
+          <span class="chip">MVP</span>
+          <span class="chip">SaaS Integration</span>
+        </div>
+
+        <h3 id="methods">1. 全球市场主流 B 端应用产品的开发流程和方法</h3>
+        <div class="grid-3">
+          <div class="panel">
+            <h4>用户对象</h4>
+            <p>B 端产品不是面向个人用户，而是面向企业内部用户、业务部门、IT 运维、采购、财务、HR、销售、客服、研发等组织角色。</p>
+          </div>
+          <div class="panel">
+            <h4>开发流程</h4>
+            <p>通常包括业务需求收集、用户场景分析、流程梳理、权限和角色设计、系统架构设计、数据接口设计、原型/PRD、开发测试、UAT、上线培训、运维支持、版本迭代。</p>
+          </div>
+          <div class="panel">
+            <h4>全球化因素</h4>
+            <p>需要考虑多语言、多地区法规、数据合规、时区、跨区域部署、全球模板 + 本地化差异、海外团队协作。</p>
+          </div>
+        </div>
+
+        <h3 id="agile">2. Agile/Scrum、Waterfall + Agile、ITIL、DevOps、CI/CD、MVP</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>方法</th>
+                <th>核心含义</th>
+                <th>典型流程 / 关注点</th>
+                <th>面试表达</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Agile / Scrum</td>
+                <td>短周期持续交付、持续反馈、持续调整。</td>
+                <td>Product Backlog、优先级评估、2-4 周 Sprint、Sprint Planning、Daily Standup、Demo / Review、Retrospective。</td>
+                <td>适合需求持续变化的产品场景，把需求拆成 Backlog，通过 Sprint 逐步交付核心功能，并在每轮 Review 中收集反馈。</td>
+              </tr>
+              <tr>
+                <td>Waterfall + Agile</td>
+                <td>项目层面用瀑布管理里程碑，功能交付层面用敏捷迭代。</td>
+                <td>Waterfall 管立项、预算、采购、安全评审、上线计划、合规审批；Agile 管需求拆分、Sprint 迭代、Demo、反馈优化。</td>
+                <td>大型企业 IT 项目通常不是纯敏捷，而是混合模式：对外承诺里程碑，对内敏捷开发。</td>
+              </tr>
+              <tr>
+                <td>ITIL</td>
+                <td>IT 服务稳定运营和管理的方法论。</td>
+                <td>Incident、Problem、Change、Service Request、SLA、Knowledge、Configuration Management。</td>
+                <td>关注上线后的故障、问题根因、变更、SLA、知识库和服务请求，确保系统能被稳定运维和持续改进。</td>
+              </tr>
+              <tr>
+                <td>DevOps</td>
+                <td>开发、测试、运维、安全协作一体化。</td>
+                <td>代码管理、自动化构建、自动化测试、自动化部署、监控告警、快速回滚、共同承担交付质量。</td>
+                <td>把开发、测试、运维和监控串起来，提高交付效率和系统稳定性，降低跨区域发布和运维复杂度。</td>
+              </tr>
+              <tr>
+                <td>CI/CD</td>
+                <td>DevOps 的核心工程实践。</td>
+                <td>代码提交、触发 Pipeline、安装依赖、编译构建、自动测试、质量扫描、安全扫描、部署测试环境、审批后上线、监控告警。</td>
+                <td>通过自动化 Pipeline 把构建、测试、扫描和部署串起来，减少人工操作，提高发布质量。</td>
+              </tr>
+              <tr>
+                <td>MVP</td>
+                <td>最小可行产品，先验证核心价值。</td>
+                <td>明确痛点、目标用户、核心场景、最小功能范围、快速原型或第一版、真实用户试用、收集反馈、决定扩展或调整。</td>
+                <td>用最小范围验证产品价值，避免一开始投入过大但方向不清。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="quote">
+          <p>在企业 IT 产品管理中，我会用 MVP 明确最小可行范围，用 Agile/Scrum 做迭代交付，在大型项目中结合 Waterfall 管理立项、采购和上线里程碑；在工程交付上通过 DevOps 和 CI/CD 提升发布效率和质量，上线后则用 ITIL 管理服务运营、故障、变更和 SLA。</p>
+        </div>
+
+        <h3 id="saas-overview">3. 主流海外 SaaS 集成经验</h3>
+        <p>这个部分不是只问“用过 SaaS 吗”，而是要说明是否做过 SaaS 和企业内部系统之间的集成。</p>
+        <div class="tag-row">
+          <span class="tag">Microsoft 365</span><span class="tag">Teams</span><span class="tag">SharePoint</span><span class="tag">Power Platform</span>
+          <span class="tag green">ServiceNow</span><span class="tag green">Salesforce</span><span class="tag green">Workday</span><span class="tag green">SAP SuccessFactors</span>
+          <span class="tag amber">Jira / Confluence</span><span class="tag amber">GitHub / GitLab</span><span class="tag amber">Slack</span>
+          <span class="tag red">Okta / Azure AD / Entra ID</span><span class="tag red">Tableau / Power BI</span><span class="tag red">Snowflake / Databricks</span>
+        </div>
+
+        <div class="callout">
+          <strong>完整 Case:</strong> 为全球业务团队搭建数据洞察平台，集成海外 SaaS、内部系统和云端数据处理能力，将分散在不同系统中的业务数据同步到 AWS 数据湖，经过清洗、建模、语义化处理后，输出到 Tableau / Power BI Dashboard、AI Platform 训练数据集、邮件自动报告和网页看板。
+        </div>
+
+        <div class="flow">海外 SaaS / 内部系统 / 日志系统
+        ↓
+API / Webhook / SFTP / Scheduled Export
+        ↓
+AWS S3 Bucket 原始数据区 Raw Layer
+        ↓
+Glue Crawler / Glue Job / Lambda / Step Functions
+        ↓
+清洗、校验、标准化、主数据映射
+        ↓
+Curated Data Asset / Semantic Data Layer
+        ↓
+Athena / Redshift / Snowflake / Data Catalog
+        ↓
+Tableau / Power BI Dashboard
+        ↓
+AI Platform 模型训练 / 自动邮件 / 网页更新</div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <h4>主数据 Master Data</h4>
+            <ul>
+              <li>用户：员工 ID、邮箱、部门、地区、岗位、直属经理。</li>
+              <li>组织：国家、区域、BU、成本中心。</li>
+              <li>客户/供应商：客户 ID、供应商 ID、合同主体。</li>
+              <li>产品/服务：服务目录、产品线、系统编码。</li>
+              <li>权限维度：角色、AD Group、数据访问范围。</li>
+              <li>汽车相关：车辆 VIN、model range 型号、品牌、地区。</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h4>AWS Pipeline</h4>
+            <ul>
+              <li>Ingestion：通过 SaaS API、Webhook、SFTP、Scheduled Export 或 Connector 获取数据，落到 AWS S3 bucket。</li>
+              <li>Data Catalog：用 Glue Crawler 扫描 S3 数据并注册到 Glue Data Catalog。</li>
+              <li>Processing：Glue Job Python / PySpark 做清洗、格式转换、去重、质量校验。</li>
+              <li>Data Asset：Raw、Clean、Curated、Semantic 四层数据资产。</li>
+              <li>Consumption：Tableau / Power BI、AI Platform、Outlook / Teams、Web 页面。</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4>SaaS 集成能力拆解</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>能力</th><th>具体内容</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>身份认证集成</td><td>使用 Microsoft Entra ID / Azure AD 作为统一身份源，通过 SAML / OIDC 实现 SaaS SSO，保证全球用户使用企业账号登录。</td></tr>
+              <tr><td>账号和权限同步</td><td>通过 SCIM 或 AD Group Mapping 同步用户、部门和角色，结合 RBAC / Row-Level Security 控制不同地区、部门和角色的数据可见范围。</td></tr>
+              <tr><td>API 数据集成</td><td>通过 REST API、Webhook 或 SaaS Connector 获取 Jira Issue、ServiceNow Ticket、Salesforce Opportunity、Microsoft Graph 邮件与日历数据。</td></tr>
+              <tr><td>数据平台集成</td><td>将 SaaS 数据进入 AWS S3 数据湖，通过 Glue Job / Lambda 进行清洗、建模和质量校验，再输出给 BI、AI 和自动化通知系统。</td></tr>
+              <tr><td>工作流集成</td><td>将分析结果或异常事件推送到 ServiceNow / Jira / Power Automate，例如自动创建工单、触发审批、发送 Teams 或 Outlook 通知。</td></tr>
+              <tr><td>运维与治理</td><td>监控 API 调用失败、数据延迟、Pipeline 运行状态、Dashboard 刷新状态，并结合 SLA、审计日志、License 使用率和供应商支持流程进行运营管理。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section page-section" id="use-case" data-title="Use case 自研系统 SaaS 集成 跨区域上线 汽车 数据分析 用户行为 平台 Pipeline 自动化报告 AI 分析工具">
+        <div class="section-header">
+          <div>
+            <h2>Use Case</h2>
+            <p>原 Wiki 的 Use-case 页面，聚焦三类面试案例：自研系统、SaaS 集成、跨区域上线或软硬集成，并展开企业内部汽车数据分析与用户行为洞察平台。</p>
+          </div>
+          <span class="source-label">Page: Use-case.md</span>
+        </div>
+
+        <h3>三类重点案例</h3>
+        <div class="grid-3">
+          <div class="panel">
+            <h4>1. 自研系统案例</h4>
+            <p>内部 IT 服务申请平台、数据处理 Pipeline、自动化报告系统、AI 分析工具。</p>
+          </div>
+          <div class="panel">
+            <h4>2. SaaS 集成案例</h4>
+            <p>Jira / ServiceNow / Microsoft Graph / Salesforce 数据接入 AWS S3，再做 Glue 清洗、Power BI Dashboard 和邮件通知。</p>
+          </div>
+          <div class="panel">
+            <h4>3. 跨区域上线或软硬集成案例</h4>
+            <p>全球会议室设备、IoT 设备监控、工厂终端数据采集、跨国家 IT 服务推广。</p>
+          </div>
+        </div>
+
+        <h3 id="auto-case">企业内部汽车数据分析与用户行为洞察平台</h3>
+        <p>企业内部有大量汽车相关数据分散在不同系统中，例如车主 App 行为、官网浏览、线索/试驾、CRM 客户信息、售后工单、车辆使用数据、充电行为、功能使用日志等。不同业务团队需要看不同指标，但过去主要依赖人工 Excel、零散报表或单系统 Dashboard，数据口径不统一，报告产出慢，也很难做用户行为分析和趋势预测。</p>
+        <p>补充数据来源包括车辆数据信息、车辆使用数据、AWS cloud、CDC 脚本。</p>
+
+        <h4>核心痛点</h4>
+        <ol>
+          <li>数据分散在多个系统，无法形成统一用户视图。</li>
+          <li>报表依赖人工整理，周期长，容易出错。</li>
+          <li>不同团队对指标口径理解不一致。</li>
+          <li>很难分析用户从看车、试驾、购车、用车到售后的完整旅程。</li>
+          <li>缺少自动化预警和 AI 辅助分析。</li>
+          <li>数据权限和隐私合规需要严格控制。</li>
+        </ol>
+
+        <h4>目标</h4>
+        <p>建设一个企业内部汽车数据分析与用户行为洞察平台，将多源数据接入统一数据资产层，形成标准化指标体系、自动化报告、业务 Dashboard 和 AI 分析能力，支持产品优化、用户运营、售后服务、市场投放和管理层决策。</p>
+        <div class="grid-2">
+          <div class="panel"><h4>统一数据资产</h4><p>打通 App、车辆、CRM、售后、官网、活动等数据。</p></div>
+          <div class="panel"><h4>统一指标口径</h4><p>定义用户活跃、功能使用、转化、留存、满意度等标准指标。</p></div>
+          <div class="panel"><h4>自动化报告</h4><p>自动生成日报、周报、月报，减少人工整理。</p></div>
+          <div class="panel"><h4>AI 分析工具</h4><p>支持用户分群、行为预测、异常检测、自然语言问数或报告摘要。</p></div>
+        </div>
+
+        <h4>系统架构</h4>
+        <div class="image-frame">
+          <img src="https://github.com/user-attachments/assets/7ee532e1-c078-493e-afa5-a0c79acccd5d" alt="汽车数据分析平台系统架构图" />
+        </div>
+
+        <h3 id="data-pipeline">数据处理 Pipeline</h3>
+        <p>数据 Pipeline 是这个案例的技术核心。不同来源的数据先进入数据湖 Raw Layer，保留原始数据；之后通过 Python / Glue Job / PySpark 做清洗和标准化，例如统一时间格式、地区编码、车型编码、用户 ID、车辆 VIN、渠道来源、事件类型；最后进行用户行为建模和指标聚合，形成面向业务的 Curated Data Asset 和 Semantic Layer。</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>步骤</th><th>具体内容</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1. 数据接入</td><td>App 埋点事件：页面访问、按钮点击、功能使用；车机/车辆日志：导航、空调、驾驶辅助、充电、OTA 状态，充电数据信息如高压低压、电流、电压等；CRM 数据：线索、客户、购车阶段、销售跟进；售后数据：工单、维修、投诉、满意度；官网数据：页面浏览、配置器使用、预约试驾；活动数据：营销活动触达、点击、转化。</td></tr>
+              <tr><td>2. 数据清洗</td><td>删除重复事件，统一时间格式和时区，处理空值和异常值，统一车型、地区、渠道、用户类型编码，将原始状态码映射成业务可读状态。</td></tr>
+              <tr><td>3. 主数据映射</td><td>用户 ID、手机号 hash、App ID、CRM customer ID 映射；车辆 VIN、车型、配置、生产批次映射；经销商、城市、区域、市场映射。</td></tr>
+              <tr><td>4. 隐私与合规</td><td>PII 脱敏，例如手机号、邮箱、姓名；最小权限访问；用户行为分析只保留必要字段；敏感数据分层存储；审计访问记录。</td></tr>
+              <tr><td>5. 指标建模</td><td>用户活跃：DAU、WAU、MAU；留存：7 日/30 日留存；转化：浏览车型 -> 配置车辆 -> 预约试驾 -> 下订；功能使用：智能驾驶、语音助手、充电规划、远程控车；售后：工单量、响应时长、关闭时长、满意度；车辆使用：里程、充电频率、OTA 成功率、故障码趋势。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section page-section" id="saas-data" data-title="SaaS 数据集成 REST API Webhook Connector App Registration OAuth API Token Pagination Incremental Sync Rate Limit Retry S3 Glue">
+        <div class="section-header">
+          <div>
+            <h2>SaaS 数据集成</h2>
+            <p>原 Wiki 的 SaaS 数据集成页面，说明 REST API、Webhook 和 SaaS Connector 三种集成方式，以及各自适合的企业场景。</p>
+          </div>
+          <span class="source-label">Page: SaaS-数据集成.md</span>
+        </div>
+
+        <div class="grid-3">
+          <div class="panel">
+            <h4>REST API</h4>
+            <p>你主动去 SaaS 系统“拉数据”。适合定时批量同步，例如每天同步 Jira Issue、ServiceNow Ticket 或 Salesforce Opportunity。</p>
+          </div>
+          <div class="panel">
+            <h4>Webhook</h4>
+            <p>SaaS 系统有变化时主动“推数据”给你。适合实时事件，例如 Jira 状态变更、ServiceNow 工单升级、Salesforce 商机阶段变化。</p>
+          </div>
+          <div class="panel">
+            <h4>SaaS Connector</h4>
+            <p>用现成连接器或平台化工具配置同步，少写代码。适合标准业务对象快速接入。</p>
+          </div>
+        </div>
+
+        <h3>三种方式的落地逻辑</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>方式</th><th>适合场景</th><th>关键工作</th><th>注意事项</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>REST API</td>
+                <td>定时批量同步 Jira Issue、ServiceNow Ticket、Salesforce Opportunity。</td>
+                <td>App Registration、权限配置、OAuth 2.0 或 API Token、调用业务对象 API、分页、增量同步、限流、错误重试、字段映射、审计日志。</td>
+                <td>同步后的原始 JSON 进入 S3 raw layer，再通过 Glue Job 做清洗、主数据关联和语义建模。</td>
+              </tr>
+              <tr>
+                <td>Webhook</td>
+                <td>实时事件，例如 Jira 状态变更、ServiceNow 工单升级、Salesforce 商机阶段变化。</td>
+                <td>Webhook 推送到 API Gateway 或 Webhook Receiver，再触发 Lambda 或消息队列处理。</td>
+                <td>重点是签名校验、幂等处理、失败重试和事件追踪。</td>
+              </tr>
+              <tr>
+                <td>Connector</td>
+                <td>标准对象同步，例如 Salesforce Opportunity、ServiceNow Incident、Zendesk Ticket。</td>
+                <td>评估 AWS AppFlow、MuleSoft、Fivetran、Power Automate 等成熟 Connector。</td>
+                <td>如果有复杂字段映射、跨系统主数据关联、特殊权限控制或数据质量规则，通常还是需要自定义 API 集成。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="quote">
+          <p>我会根据数据实时性、对象复杂度、数据量、合规要求、维护成本和供应商 API 限制来选择具体方案。对于全球 IT 服务数据平台，比较常见的是 REST API 做批量同步、Webhook 做关键事件触发、Connector 做标准对象快速接入，最后统一进入数据湖和 BI/AI 消费层。</p>
+        </div>
+      </section>
+
+      <section class="section page-section" id="lifecycle" data-title="全球 IT 服务 技术产品 全生命周期 管理 需求 规划 方案 交付 运营 迭代 退役 Roadmap UAT SLA 成本 满意度">
+        <div class="section-header">
+          <div>
+            <h2>全球 IT 服务对应技术产品的全生命周期管理</h2>
+            <p>原 Wiki 页面内容，说明技术产品 Owner 如何从需求发现到产品退役端到端管理全球 IT 服务产品。</p>
+          </div>
+          <span class="source-label">Page: 全球-IT-服务对应技术产品的全生命周期管理.md</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>阶段</th><th>管理重点</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>需求阶段</td><td>收集业务需求、识别痛点、定义目标用户和业务价值。</td></tr>
+              <tr><td>规划阶段</td><td>制定产品 Roadmap、功能优先级、资源计划和里程碑。</td></tr>
+              <tr><td>方案阶段</td><td>判断自研、外采还是 SaaS 集成，设计架构和集成方案。</td></tr>
+              <tr><td>交付阶段</td><td>推动开发、测试、UAT、上线、培训和切换。</td></tr>
+              <tr><td>运营阶段</td><td>监控使用率、稳定性、问题反馈、SLA、成本和满意度。</td></tr>
+              <tr><td>迭代阶段</td><td>持续优化功能、流程、权限、性能和用户体验。</td></tr>
+              <tr><td>退役阶段</td><td>系统替换、数据迁移、合同关闭、权限回收和文档归档。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="quote">
+          <p>我理解 IT 技术产品的全生命周期管理，是从需求发现到产品退役的端到端管理。前期需要识别业务痛点、定义目标用户和价值指标；中期需要推动方案设计、资源协调、开发测试、UAT 和上线；上线后还要持续跟踪使用率、问题反馈、SLA、成本和用户满意度，并根据业务变化进行版本迭代。如果产品不再适用，还需要规划替换、数据迁移和系统退役。</p>
+        </div>
+      </section>
+
+      <section class="section page-section" id="software-hardware" data-title="纯软件应用 软硬集成服务交付 门户 审批系统 数据看板 CRM ITSM IoT 会议室设备 工厂设备 车载 充电 测试设备">
+        <div class="section-header">
+          <div>
+            <h2>纯软件应用与软硬集成服务交付</h2>
+            <p>原 Wiki 页面内容，区分纯软件产品与软硬件集成类服务的交付重点，并提供面试表达。</p>
+          </div>
+          <span class="source-label">Page: 纯软件应用与软硬集成服务交付.md</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <h4>纯软件应用</h4>
+            <p>门户、审批系统、数据看板、知识库、CRM、ITSM、协同平台、移动 App。</p>
+            <p>重点在流程、权限、数据、用户体验和系统稳定性。</p>
+          </div>
+          <div class="panel">
+            <h4>软硬集成服务</h4>
+            <p>硬件设备 + 软件平台 + 网络 + 数据采集 + 运维支持，例如会议室设备管理、工厂设备监控、IoT 平台、智能终端、边缘计算、车载/充电/测试设备相关服务。</p>
+            <p>还要考虑设备选型、网络环境、安装部署、现场测试、数据采集、远程监控、故障处理和硬件生命周期管理。</p>
+          </div>
+        </div>
+
+        <h3>完整面试表达</h3>
+        <div class="quote">
+          <p>我理解这个岗位核心是负责全球企业 IT 技术产品的端到端管理，既要懂 B 端产品方法，也要懂企业系统集成和服务交付。</p>
+        </div>
+        <div class="quote">
+          <p>在产品开发流程上，我会从业务场景、用户角色和流程痛点出发，完成需求分析、方案设计、Roadmap 规划、开发测试、UAT、上线推广和持续运营。在全球化环境下，还需要考虑多地区用户、本地化需求、数据合规、权限模型和跨时区协作。</p>
+        </div>
+        <div class="quote">
+          <p>在技术方案上，我会根据业务复杂度、上线周期、预算、安全合规和长期运维成本，判断采用自研、外采还是 SaaS 集成。对于海外 SaaS，我会重点关注 SSO、权限同步、API/Webhook、数据集成、审计日志、License 管理和供应商 SLA。</p>
+        </div>
+        <div class="quote">
+          <p>同时，IT 服务产品不一定只是纯软件，也可能涉及软硬件集成。因此除了软件功能交付，还需要考虑设备部署、网络环境、现场测试、运维监控和故障响应，确保服务可以在全球范围内稳定落地和持续迭代。</p>
+        </div>
+      </section>
+
+      <div class="page-footer">
+        Generated from GitHub Wiki pages in ttoriaa/interview-depot.wiki. Local file: interview_depot_wiki_site.html
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const searchBox = document.getElementById('searchBox');
+    const sections = Array.from(document.querySelectorAll('.page-section'));
+    const navLinks = Array.from(document.querySelectorAll('.nav-list a'));
+
+    searchBox.addEventListener('input', () => {
+      const query = searchBox.value.trim().toLowerCase();
+      sections.forEach((section) => {
+        const haystack = `${section.dataset.title || ''} ${section.innerText}`.toLowerCase();
+        section.classList.toggle('hidden-by-search', query.length > 0 && !haystack.includes(query));
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (!visible) return;
+
+      navLinks.forEach((link) => {
+        const target = link.getAttribute('href');
+        link.classList.toggle('active', target === `#${visible.target.id}`);
+      });
+    }, { rootMargin: '-20% 0px -65% 0px', threshold: [0.1, 0.2, 0.4] });
+
+    sections.forEach((section) => observer.observe(section));
+  </script>
+</body>
+</html>
