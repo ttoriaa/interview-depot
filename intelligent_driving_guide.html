@@ -1,0 +1,1782 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>智能驾驶知识地图</title>
+  <style>
+    :root {
+      --bg: #f7f8f6;
+      --ink: #111827;
+      --muted: #52606d;
+      --panel: #ffffff;
+      --panel-soft: #f1f5f4;
+      --line: #d7dfdc;
+      --teal: #0f766e;
+      --blue: #2563eb;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --violet: #6d28d9;
+      --shadow: 0 18px 45px rgba(17, 24, 39, 0.09);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      background:
+        linear-gradient(90deg, rgba(15, 118, 110, 0.08) 1px, transparent 1px),
+        linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+        linear-gradient(135deg, #f7f8f6 0%, #eef4f2 48%, #f5f7fb 100%);
+      background-size: 36px 36px, 36px 36px, auto;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0 16px;
+      background: linear-gradient(180deg, rgba(247, 248, 246, 0.96), rgba(247, 248, 246, 0.74));
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 190px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(17, 24, 39, 0.18);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+      font-weight: 900;
+      color: var(--teal);
+    }
+
+    .brand strong {
+      display: block;
+      line-height: 1.1;
+      font-size: 15px;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.78);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 4px;
+    }
+
+    .hero-copy,
+    .hero-visual,
+    .section,
+    .callout {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 26px;
+      min-height: 360px;
+      display: grid;
+      align-content: space-between;
+      gap: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--teal);
+    }
+
+    h1,
+    h2,
+    h3,
+    p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 12px;
+      font-size: clamp(30px, 5vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.72;
+      max-width: 760px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: #f8faf9;
+      min-height: 94px;
+    }
+
+    .stat strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 20px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .hero-visual {
+      position: relative;
+      overflow: hidden;
+      min-height: 360px;
+      padding: 20px;
+      background:
+        linear-gradient(180deg, rgba(17, 24, 39, 0.9), rgba(20, 83, 45, 0.88)),
+        #111827;
+      color: #e5e7eb;
+    }
+
+    .road {
+      position: absolute;
+      inset: 0;
+      opacity: 0.92;
+    }
+
+    .road svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .visual-notes {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-content: end;
+      height: 100%;
+    }
+
+    .note {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.66);
+      backdrop-filter: blur(6px);
+    }
+
+    .note b {
+      display: block;
+      margin-bottom: 4px;
+      color: #ffffff;
+      font-size: 13px;
+    }
+
+    .note span {
+      color: #cbd5e1;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .section {
+      margin-top: 18px;
+      padding: 22px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin-bottom: 6px;
+      font-size: clamp(22px, 3vw, 34px);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 8px;
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .levels {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(160px, 1fr));
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .level-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      min-width: 180px;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .level-card[data-type="assist"] { border-top: 5px solid var(--green); }
+    .level-card[data-type="transition"] { border-top: 5px solid var(--amber); }
+    .level-card[data-type="auto"] { border-top: 5px solid var(--blue); }
+    .level-card[data-type="future"] { border-top: 5px solid var(--violet); }
+
+    .level-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .level-title strong {
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .level-title span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .level-card h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .level-card p,
+    .small-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-list li {
+      position: relative;
+      padding-left: 14px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.48;
+    }
+
+    .mini-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.72em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      transform: translateY(-50%);
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .term-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 14px;
+      min-height: 180px;
+    }
+
+    .term-card strong {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .term-card em {
+      color: var(--muted);
+      font-style: normal;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .term-card p {
+      margin: 0 0 9px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .term-card .example {
+      margin: 0;
+      padding: 9px;
+      border-left: 3px solid var(--teal);
+      background: #f8faf9;
+      color: #334155;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(140px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .pipe-step {
+      position: relative;
+      min-width: 150px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 13px;
+    }
+
+    .pipe-step::after {
+      content: "";
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      width: 8px;
+      height: 2px;
+      background: #94a3b8;
+    }
+
+    .pipe-step:last-child::after { display: none; }
+
+    .pipe-step b {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .pipe-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.52;
+    }
+
+    .deep-dive {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .deep-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 16px;
+    }
+
+    .deep-card h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+      line-height: 1.32;
+    }
+
+    .deep-card > p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .concept-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .concept {
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius);
+      background: #f8faf9;
+      padding: 10px;
+    }
+
+    .concept b {
+      display: block;
+      margin-bottom: 4px;
+      color: #111827;
+      font-size: 13px;
+    }
+
+    .concept span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.52;
+    }
+
+    .loop-flow {
+      display: grid;
+      gap: 8px;
+      counter-reset: loop;
+    }
+
+    .loop-step {
+      position: relative;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius);
+      background: #f8faf9;
+      padding: 10px 10px 10px 42px;
+    }
+
+    .loop-step::before {
+      counter-increment: loop;
+      content: counter(loop);
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .loop-step b {
+      display: block;
+      margin-bottom: 3px;
+      color: #111827;
+      font-size: 13px;
+    }
+
+    .loop-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.52;
+    }
+
+    .stack-summary {
+      margin-top: 10px;
+      border-left: 3px solid var(--teal);
+      background: #f0fdfa;
+      padding: 10px;
+      color: #115e59;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .route-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .route-card h3 {
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .route-card p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.56;
+    }
+
+    .route-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .route-meta span {
+      display: inline-flex;
+      min-height: 25px;
+      align-items: center;
+      padding: 4px 7px;
+      border-radius: var(--radius);
+      background: #edf2f7;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .company-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .company-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 14px;
+      min-height: 172px;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+
+    .company-card h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .company-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.52;
+    }
+
+    .company-card .role {
+      width: fit-content;
+      min-height: 24px;
+      padding: 4px 7px;
+      border-radius: var(--radius);
+      color: #ffffff;
+      background: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .company-card[data-role="oem"] .role { background: var(--blue); }
+    .company-card[data-role="chip"] .role { background: var(--violet); }
+    .company-card[data-role="l4"] .role { background: var(--amber); }
+    .company-card[data-role="tier1"] .role { background: var(--green); }
+
+    .coop-wrap {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .coop-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .coop-list li {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 11px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.52;
+    }
+
+    .coop-list b { color: var(--ink); }
+
+    .map-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 14px;
+      overflow-x: auto;
+    }
+
+    .map-svg {
+      width: 100%;
+      min-width: 620px;
+      height: 430px;
+      display: block;
+    }
+
+    .map-label {
+      font-size: 13px;
+      font-weight: 800;
+      fill: #111827;
+    }
+
+    .map-sub {
+      font-size: 11px;
+      fill: #64748b;
+    }
+
+    .map-node { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.4; }
+    .map-node.primary { stroke: #0f766e; stroke-width: 2; }
+    .map-node.chip { stroke: #6d28d9; stroke-width: 2; }
+    .map-node.l4 { stroke: #b45309; stroke-width: 2; }
+    .map-line { stroke: #94a3b8; stroke-width: 1.5; fill: none; stroke-dasharray: 4 5; }
+    .map-line.strong { stroke: #0f766e; stroke-width: 2.2; stroke-dasharray: none; }
+
+    .judge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .judge-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .judge-card b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .judge-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .learning {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(120px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .learn-step {
+      min-width: 130px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 12px;
+    }
+
+    .learn-step b {
+      display: block;
+      color: var(--teal);
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .learn-step span {
+      display: block;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .database-tools {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.3fr) repeat(4, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .db-control {
+      display: grid;
+      gap: 6px;
+    }
+
+    .db-control label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .db-control input,
+    .db-control select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: var(--ink);
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .database-status {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .database-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .db-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 14px;
+      display: grid;
+      gap: 9px;
+      align-content: start;
+      min-height: 230px;
+    }
+
+    .db-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .db-card h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.32;
+    }
+
+    .db-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.54;
+    }
+
+    .db-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .db-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 4px 7px;
+      border-radius: var(--radius);
+      background: #edf2f7;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .db-pill.primary { background: #ccfbf1; color: #115e59; }
+    .db-pill.blue { background: #dbeafe; color: #1d4ed8; }
+
+    .compare-zone {
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .compare-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .compare-head h3 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+
+    .compare-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .compare-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .compare-actions button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      color: #334155;
+      padding: 7px 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .model-picks {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .model-pick {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 10px;
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .model-pick input {
+      margin-top: 2px;
+      accent-color: var(--teal);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+    }
+
+    .compare-table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.46;
+    }
+
+    .compare-table th {
+      position: sticky;
+      top: 0;
+      background: #f8faf9;
+      color: #334155;
+      font-size: 12px;
+      z-index: 1;
+    }
+
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    .db-footnote {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      background: #111827;
+      color: #f8fafc;
+    }
+
+    .callout h2 {
+      margin-bottom: 6px;
+      font-size: 22px;
+    }
+
+    .callout p {
+      margin: 0;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .callout .tag {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    @media (max-width: 1080px) {
+      .hero,
+      .coop-wrap { grid-template-columns: 1fr; }
+      .deep-dive,
+      .glossary-grid,
+      .company-grid,
+      .database-grid,
+      .judge-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .matrix { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .database-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .model-picks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 24px, 1280px); padding-top: 12px; }
+      .topbar { position: static; align-items: flex-start; flex-direction: column; }
+      .nav { justify-content: flex-start; }
+      .hero-copy { padding: 20px; min-height: auto; }
+      .hero-stats,
+      .deep-dive,
+      .glossary-grid,
+      .matrix,
+      .company-grid,
+      .database-tools,
+      .database-grid,
+      .model-picks,
+      .judge-grid { grid-template-columns: 1fr; }
+      .section { padding: 18px; }
+      .section-head { display: block; }
+      .compare-head { display: block; }
+      .compare-actions { justify-content: flex-start; margin-top: 10px; }
+      .section-head .tag { margin-top: 10px; }
+      .visual-notes { grid-template-columns: 1fr; }
+      .callout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="回到顶部">
+        <span class="brand-mark">AD</span>
+        <span>
+          <strong>智能驾驶知识地图</strong>
+          <span>L1-L5 · 技术栈 · 公司路线 · 合作图谱</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#levels">分级</a>
+        <a href="#terms">术语</a>
+        <a href="#stack">技术栈</a>
+        <a href="#routes">路线</a>
+        <a href="#players">公司</a>
+        <a href="#coop">合作图谱</a>
+        <a href="#database">数据库</a>
+        <a href="#judge">判断框架</a>
+      </nav>
+    </header>
+
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <div>
+          <p class="eyebrow">Autonomous Driving Primer</p>
+          <h1>从辅助驾驶到自动驾驶，一页看懂行业地图</h1>
+          <p class="lead">这份页面把智能驾驶拆成三个问题：车到底能替人做什么，背后用哪些技术实现，市场上的公司和车企分别站在哪条路线上。</p>
+        </div>
+        <div class="hero-stats" aria-label="核心结论">
+          <div class="stat">
+            <strong>L2++</strong>
+            <span>城市 NOA 很强也通常仍是 L2，驾驶员必须监督。</span>
+          </div>
+          <div class="stat">
+            <strong>L3</strong>
+            <span>核心变化是责任边界，ODD 内系统承担驾驶任务。</span>
+          </div>
+          <div class="stat">
+            <strong>L4</strong>
+            <span>限定区域无人化，靠技术、运营和远程协助共同闭环。</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="智能驾驶场景示意图">
+        <div class="road">
+          <svg viewBox="0 0 640 460" role="img" aria-label="车辆传感器、道路、目标和规划轨迹示意">
+            <defs>
+              <linearGradient id="lane" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#0f766e" stop-opacity="0.32" />
+                <stop offset="1" stop-color="#2563eb" stop-opacity="0.2" />
+              </linearGradient>
+              <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <path d="M120 460 C190 330 215 205 218 0" stroke="#475569" stroke-width="92" fill="none" opacity="0.85" />
+            <path d="M398 460 C360 322 333 184 342 0" stroke="#475569" stroke-width="92" fill="none" opacity="0.85" />
+            <path d="M256 460 C275 330 282 202 280 0" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="18 18" fill="none" opacity="0.85" />
+            <path d="M356 436 C310 300 295 154 310 42" stroke="#22c55e" stroke-width="5" fill="none" stroke-linecap="round" filter="url(#glow)" />
+            <path d="M330 320 C252 250 212 175 205 90" stroke="#38bdf8" stroke-width="2" fill="none" stroke-dasharray="5 7" opacity="0.9" />
+            <path d="M330 320 C400 247 430 154 420 78" stroke="#fbbf24" stroke-width="2" fill="none" stroke-dasharray="5 7" opacity="0.9" />
+            <ellipse cx="334" cy="323" rx="116" ry="88" fill="url(#lane)" stroke="#38bdf8" stroke-width="1.5" opacity="0.65" />
+            <rect x="292" y="288" width="72" height="98" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" />
+            <rect x="304" y="302" width="48" height="20" rx="5" fill="#0f172a" />
+            <rect x="304" y="352" width="48" height="18" rx="5" fill="#0f172a" opacity="0.72" />
+            <circle cx="286" cy="318" r="8" fill="#22c55e" />
+            <circle cx="370" cy="318" r="8" fill="#22c55e" />
+            <circle cx="286" cy="362" r="8" fill="#22c55e" />
+            <circle cx="370" cy="362" r="8" fill="#22c55e" />
+            <rect x="402" y="122" width="54" height="78" rx="10" fill="#eab308" stroke="#fef3c7" stroke-width="2" />
+            <rect x="152" y="86" width="46" height="66" rx="10" fill="#60a5fa" stroke="#dbeafe" stroke-width="2" />
+            <circle cx="480" cy="274" r="18" fill="#fb7185" opacity="0.92" />
+            <circle cx="124" cy="248" r="15" fill="#f97316" opacity="0.9" />
+            <text x="390" y="110" fill="#f8fafc" font-size="16" font-weight="800">目标车</text>
+            <text x="445" y="270" fill="#f8fafc" font-size="14" font-weight="800">行人</text>
+            <text x="84" y="240" fill="#f8fafc" font-size="14" font-weight="800">障碍物</text>
+            <text x="292" y="412" fill="#f8fafc" font-size="14" font-weight="800">规划轨迹</text>
+          </svg>
+        </div>
+        <div class="visual-notes">
+          <div class="note"><b>感知</b><span>识别车道、车辆、行人、障碍物、红绿灯和可行驶空间。</span></div>
+          <div class="note"><b>预测</b><span>判断周围交通参与者下一步可能怎么动。</span></div>
+          <div class="note"><b>规划</b><span>选择车道、速度、避让策略和通过路口的轨迹。</span></div>
+          <div class="note"><b>控制</b><span>把轨迹变成方向盘、制动和加速的连续动作。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="levels">
+      <div class="section-head">
+        <div>
+          <h2>L1-L5 分级与实现方式</h2>
+          <p>分级的核心不是功能名称，而是人和系统各自承担多少驾驶责任。L1-L2 是辅助驾驶，L3 开始才进入自动驾驶责任边界。</p>
+        </div>
+        <span class="tag">SAE J3016 口径</span>
+      </div>
+      <div class="levels">
+        <article class="level-card" data-type="assist">
+          <div class="level-title"><strong>L0</strong><span>无自动化</span></div>
+          <h3>系统只提醒或短暂介入</h3>
+          <p>驾驶员完成所有驾驶任务。系统可以有预警、紧急制动等安全辅助。</p>
+          <ul class="mini-list">
+            <li>前碰撞预警、盲区提醒</li>
+            <li>AEB 可以短暂介入制动</li>
+            <li>不持续控制车辆</li>
+          </ul>
+        </article>
+        <article class="level-card" data-type="assist">
+          <div class="level-title"><strong>L1</strong><span>驾驶辅助</span></div>
+          <h3>横向或纵向之一由系统辅助</h3>
+          <p>人负责观察和决策，系统只帮助控制方向或速度中的一个维度。</p>
+          <ul class="mini-list">
+            <li>ACC 自适应巡航控制车速和车距</li>
+            <li>LKA 车道保持辅助控制方向</li>
+            <li>摄像头/毫米波雷达是主力传感器</li>
+          </ul>
+        </article>
+        <article class="level-card" data-type="assist">
+          <div class="level-title"><strong>L2</strong><span>组合辅助</span></div>
+          <h3>横向和纵向同时辅助</h3>
+          <p>系统可以同时控制方向和速度，但驾驶员必须持续监督，随时接管。</p>
+          <ul class="mini-list">
+            <li>高速辅助、车道居中、自动变道</li>
+            <li>DMS/方向盘感应监控驾驶员</li>
+            <li>法规责任仍主要在人</li>
+          </ul>
+        </article>
+        <article class="level-card" data-type="transition">
+          <div class="level-title"><strong>L2++</strong><span>行业叫法</span></div>
+          <h3>城市 NOA 与高阶辅助驾驶</h3>
+          <p>不是 SAE 正式级别。功能很强，但只要要求人监督，本质仍是 L2。</p>
+          <ul class="mini-list">
+            <li>BEV 感知、Occupancy 网络</li>
+            <li>轻地图/无图导航</li>
+            <li>端到端规划逐渐上车</li>
+          </ul>
+        </article>
+        <article class="level-card" data-type="auto">
+          <div class="level-title"><strong>L3</strong><span>有条件自动驾驶</span></div>
+          <h3>ODD 内系统负责驾驶任务</h3>
+          <p>在明确运行设计域内，系统负责动态驾驶任务；超出条件时请求人接管。</p>
+          <ul class="mini-list">
+            <li>需要冗余感知、计算、制动和转向</li>
+            <li>需要最小风险策略 MRM</li>
+            <li>法律责任和认证要求显著提高</li>
+          </ul>
+        </article>
+        <article class="level-card" data-type="auto">
+          <div class="level-title"><strong>L4</strong><span>高度自动驾驶</span></div>
+          <h3>限定场景内可无人驾驶</h3>
+          <p>在指定城市、园区、港口、矿区或线路内，系统可以不依赖车内驾驶员。</p>
+          <ul class="mini-list">
+            <li>Robotaxi、无人小巴、无人配送</li>
+            <li>高精地图、远程运营、车队调度</li>
+            <li>ODD 外不承诺自动驾驶</li>
+          </ul>
+        </article>
+        <article class="level-card" data-type="future">
+          <div class="level-title"><strong>L5</strong><span>完全自动驾驶</span></div>
+          <h3>不限定道路和天气</h3>
+          <p>理论上任何人能开的地方系统都能开，目前没有真正商业化落地。</p>
+          <ul class="mini-list">
+            <li>不依赖预设 ODD</li>
+            <li>开放世界泛化极难</li>
+            <li>安全证明和责任体系尚未成熟</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="terms">
+      <div class="section-head">
+        <div>
+          <h2>你追问的关键术语</h2>
+          <p>这些词是理解智能驾驶发布会和技术路线的入口。记住它们分别回答“车怎么跟、怎么守线、怎么刹、怎么看世界、在哪些条件下负责”。</p>
+        </div>
+        <span class="tag">Glossary</span>
+      </div>
+      <div class="glossary-grid">
+        <article class="term-card">
+          <strong>ACC <em>Adaptive Cruise Control</em></strong>
+          <p>自适应巡航。系统根据前车距离自动加速、减速，维持设定车速和安全车距。</p>
+          <p class="example">例子：高速上设定 110 km/h，前车变慢时本车自动降速，前方变空时再恢复设定速度。</p>
+        </article>
+        <article class="term-card">
+          <strong>LKA <em>Lane Keeping Assist</em></strong>
+          <p>车道保持辅助。系统识别车道线，在车辆偏离车道时提醒或轻微修正方向。</p>
+          <p class="example">例子：车辆压线但驾驶员没有打转向灯，系统给方向盘一个回正力。</p>
+        </article>
+        <article class="term-card">
+          <strong>AEB <em>Automatic Emergency Braking</em></strong>
+          <p>自动紧急制动。系统判断即将碰撞时，先预警，必要时主动刹车降低碰撞风险。</p>
+          <p class="example">例子：前方车辆急停或行人横穿，驾驶员未及时制动，系统自动刹车。</p>
+        </article>
+        <article class="term-card">
+          <strong>BEV 感知 <em>Bird's-Eye View</em></strong>
+          <p>鸟瞰视角感知。把多个摄像头看到的图像转换成车周围的俯视空间表达。</p>
+          <p class="example">价值：比单张前视图更适合做车道拓扑、车辆位置、可行驶区域和路径规划。</p>
+        </article>
+        <article class="term-card">
+          <strong>Occupancy 网络 <em>占据网络</em></strong>
+          <p>把车周围三维空间切成很多小格子，判断每个格子是否被物体占据、是否可通行。</p>
+          <p class="example">价值：不必先准确命名“这是什么物体”，也能知道“这里不能开过去”。</p>
+        </article>
+        <article class="term-card">
+          <strong>轻地图/无图导航 <em>Map-light / Mapless</em></strong>
+          <p>从依赖厘米级高精地图，转向依赖导航地图、实时感知和道路拓扑理解。</p>
+          <p class="example">价值：城市覆盖扩张更快，地图维护成本更低，但对实时感知和规划要求更高。</p>
+        </article>
+        <article class="term-card">
+          <strong>端到端规划 <em>End-to-End Planning</em></strong>
+          <p>用神经网络从感知输入直接学习驾驶决策或轨迹，减少手写规则和模块间误差。</p>
+          <p class="example">注意：量产系统通常仍会保留安全约束、监控和兜底逻辑。</p>
+        </article>
+        <article class="term-card">
+          <strong>ODD <em>Operational Design Domain</em></strong>
+          <p>运行设计域。系统承诺可工作的边界条件，包括道路类型、速度、天气、光照、区域和交通状态。</p>
+          <p class="example">“ODD 内系统负责”意味着只在这些条件满足时，系统才承担对应自动驾驶任务。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="stack">
+      <div class="section-head">
+        <div>
+          <h2>智能驾驶技术栈</h2>
+          <p>一套智驾系统不是单个模型，而是一条从传感器到车辆控制、再到数据闭环的工程链路。</p>
+        </div>
+        <span class="tag">From Sensors To OTA</span>
+      </div>
+      <div class="pipeline">
+        <div class="pipe-step"><b>传感器</b><span>摄像头、毫米波雷达、激光雷达、超声波、IMU、GNSS。</span></div>
+        <div class="pipe-step"><b>感知</b><span>识别车、路、人、灯、障碍物、车道拓扑和可行驶空间。</span></div>
+        <div class="pipe-step"><b>定位与地图</b><span>知道自己在哪条路、哪个车道，以及前方道路结构。</span></div>
+        <div class="pipe-step"><b>预测</b><span>判断其他车辆和行人的意图、轨迹和风险。</span></div>
+        <div class="pipe-step"><b>规划</b><span>决定跟车、变道、让行、避障、路口通行和目标轨迹。</span></div>
+        <div class="pipe-step"><b>控制</b><span>把轨迹转成转向、制动、加速和舒适性控制。</span></div>
+        <div class="pipe-step"><b>数据闭环</b><span>采集接管和长尾场景，自动标注、仿真回放、训练并 OTA。</span></div>
+      </div>
+      <div class="deep-dive">
+        <article class="deep-card">
+          <h3>感知：把传感器信号变成“可驾驶的世界模型”</h3>
+          <p>感知层不是只回答“画面里有什么”，而是把车周围环境转换成规划系统能使用的结构化信息：哪里有车、人、路沿、红绿灯，哪里能走，哪里不能走，哪些车道彼此连接。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>2D 检测</b><span>在摄像头图像里用矩形框识别目标，比如车、行人、骑行者、交通灯。优点是成熟、便宜；限制是缺少稳定深度信息。</span></div>
+            <div class="concept"><b>3D 检测</b><span>估计目标在真实三维空间里的位置、尺寸、朝向和速度。规划系统需要知道“这辆车离我几米、朝哪个方向、会不会挡住我的轨迹”。</span></div>
+            <div class="concept"><b>BEV 感知</b><span>把多个摄像头、雷达或激光雷达信息融合到鸟瞰视角。它让系统像看俯视地图一样理解车周围 360 度空间，更适合做车道、障碍物和轨迹规划。</span></div>
+            <div class="concept"><b>Occupancy 网络</b><span>把三维空间切成小格子，判断每个格子是否被占用。它不一定要先识别“这是纸箱还是石墩”，只要知道“这个空间不能通行”就能帮助避障。</span></div>
+            <div class="concept"><b>语义分割</b><span>给图像或 BEV 空间的每个区域打标签，比如道路、车道线、人行道、路沿、建筑、天空。它解决的是“每一块区域属于什么”。</span></div>
+            <div class="concept"><b>车道拓扑</b><span>理解车道之间的连接关系：当前车道能不能左转、前方是否分叉、哪条车道通向目标导航路线。城市 NOA 过路口、环岛、匝道时非常依赖它。</span></div>
+          </div>
+          <p class="stack-summary">简单说：2D/3D 检测回答“物体在哪里”，语义分割回答“区域是什么”，BEV/Occupancy 回答“空间能不能走”，车道拓扑回答“道路怎么连接”。</p>
+        </article>
+
+        <article class="deep-card">
+          <h3>数据闭环：让系统从真实道路问题里持续变强</h3>
+          <p>智驾系统上线后，真正的竞争会转向数据闭环。量产车队每天遇到新路况、新施工、新交通行为，系统要把这些问题自动发现、整理、训练、验证，再通过 OTA 回到用户车上。</p>
+          <div class="loop-flow">
+            <div class="loop-step"><b>影子模式</b><span>系统在后台“假装开车”或评估自己的决策，但不真正控制车辆。它可以比较“如果我来开会怎么做”和“人类驾驶员实际怎么做”。</span></div>
+            <div class="loop-step"><b>Corner case 采集</b><span>自动抓取难例，比如施工改道、异形障碍物、鬼探头、无保护左转、雨夜反光、车道线消失、交通灯遮挡。</span></div>
+            <div class="loop-step"><b>回放</b><span>把真实道路片段在离线系统里重跑，复盘模型为什么误判、规划为什么犹豫、接管发生在哪个环节。</span></div>
+            <div class="loop-step"><b>自动标注</b><span>用模型、规则和人工审核结合，给海量数据生成 2D/3D 框、车道、语义、轨迹、红绿灯状态等训练标签。</span></div>
+            <div class="loop-step"><b>仿真</b><span>把真实难例改造成可重复测试的虚拟场景，批量改变速度、距离、天气、光照、车辆行为，检验新算法是否更稳。</span></div>
+            <div class="loop-step"><b>训练与评估</b><span>用新数据训练模型，再用回放集、仿真集、封闭场和道路测试验证接管率、误刹率、漏检率和舒适性。</span></div>
+            <div class="loop-step"><b>OTA</b><span>通过软件更新把验证过的新模型、新规则、新场景策略发到车端。强闭环公司通常能更快修复长尾问题。</span></div>
+          </div>
+          <p class="stack-summary">简单说：影子模式发现差距，corner case 收集难题，回放定位原因，自动标注生产训练数据，仿真扩大测试覆盖，OTA 把改进送回车辆。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="routes">
+      <div class="section-head">
+        <div>
+          <h2>市场主流技术路线</h2>
+          <p>不同公司看起来都在做“高阶智驾”，但路线差异很大：有的押注纯视觉和数据规模，有的押注多传感器冗余，有的做芯片底座，有的从 L4 下放到量产车。</p>
+        </div>
+        <span class="tag">Strategy Matrix</span>
+      </div>
+      <div class="matrix">
+        <article class="route-card">
+          <h3>纯视觉/少传感器 + 大数据</h3>
+          <p>以摄像头为主，通过大规模车队数据和端到端模型提升泛化能力。</p>
+          <div class="route-meta"><span>Tesla</span><span>低成本</span><span>数据闭环强</span></div>
+        </article>
+        <article class="route-card">
+          <h3>多传感器融合 + 激光雷达</h3>
+          <p>用摄像头、毫米波雷达、激光雷达增强安全冗余和复杂场景稳定性。</p>
+          <div class="route-meta"><span>华为 ADS</span><span>蔚来</span><span>小鹏/理想高配</span></div>
+        </article>
+        <article class="route-card">
+          <h3>高精地图到轻地图/无图</h3>
+          <p>从依赖预制地图转向实时道路理解，加速城市 NOA 覆盖。</p>
+          <div class="route-meta"><span>小鹏</span><span>Momenta</span><span>DeepRoute</span><span>毫末</span></div>
+        </article>
+        <article class="route-card">
+          <h3>芯片平台 + 软件生态</h3>
+          <p>提供车端 SoC、工具链、中间件和参考算法，成为 OEM 智驾底座。</p>
+          <div class="route-meta"><span>NVIDIA</span><span>Mobileye</span><span>Qualcomm</span><span>地平线</span></div>
+        </article>
+        <article class="route-card">
+          <h3>L4 Robotaxi 技术下放</h3>
+          <p>从无人驾驶运营积累复杂场景能力，再迁移到乘用车或商用车方案。</p>
+          <div class="route-meta"><span>Waymo</span><span>百度 Apollo</span><span>小马智行</span><span>文远知行</span></div>
+        </article>
+        <article class="route-card">
+          <h3>端到端自动驾驶</h3>
+          <p>用神经网络学习从感知到规划的驾驶策略，规则系统逐步变成安全兜底。</p>
+          <div class="route-meta"><span>Tesla</span><span>Momenta</span><span>华为/小鹏/理想推进中</span></div>
+        </article>
+      </div>
+      <div class="deep-dive">
+        <article class="deep-card">
+          <h3>L4 运营经验为什么能“外溢”</h3>
+          <p>L4 公司先在限定区域内做无人驾驶运营，比如 Robotaxi、Robobus、无人货运、园区车、港口车。它们不追求一开始覆盖全国所有道路，而是在明确 ODD 内把安全、运营、远程协助和车队管理打磨到可商业化。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>第一层：ODD 内无人化</b><span>先限定城市、区域、道路类型、天气、速度和运营时间，在边界清楚的条件下做到车内无人或少人监管。</span></div>
+            <div class="concept"><b>第二层：运营体系沉淀</b><span>除了算法，还要有远程协助、车队调度、地图更新、故障处置、乘客服务、安全员/运维体系。</span></div>
+            <div class="concept"><b>第三层：技术下放</b><span>把 L4 中成熟的感知、预测、规划、仿真、安全评估能力，降维用于乘用车 L2++/L3 或商用车限定场景。</span></div>
+            <div class="concept"><b>第四层：商业场景复制</b><span>把 Robotaxi 经验迁移到机场、园区、港口、矿区、干线物流、环卫、公交接驳等更容易定义 ODD 的场景。</span></div>
+          </div>
+          <p class="stack-summary">这条路线的核心不是“先做一个消费者功能”，而是“先在可控区域里证明无人驾驶系统能安全运营”，再把技术和运营能力拆出来卖给车企或场景方。</p>
+        </article>
+
+        <article class="deep-card">
+          <h3>Waymo、百度、小马、文远的差异</h3>
+          <p>它们都可以归入 L4 运营路线，但侧重点不一样：Waymo 更像最成熟的 Robotaxi 运营标杆；百度更强调中国 Robotaxi 运营和 Apollo 平台；小马智行偏 Robotaxi/Robotruck 和车企合作；文远知行更强调多场景 L4 商业化。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>Waymo</b><span>强项是美国城市 Robotaxi 的长期运营、安全体系、传感器冗余和自动驾驶全栈。它代表“高成本高安全冗余、限定城市逐步扩张”的路线。</span></div>
+            <div class="concept"><b>百度 Apollo / 萝卜快跑</b><span>强项是中国城市 Robotaxi 运营、高精地图、Apollo 技术平台和本土政策/运营生态。它同时做 L4 运营和量产智驾技术平台。</span></div>
+            <div class="concept"><b>小马智行</b><span>强项是 Robotaxi 与 Robotruck 双线探索，以及与丰田、广汽、一汽等车企合作。它更像 L4 技术公司向乘用车和商用物流外溢。</span></div>
+            <div class="concept"><b>文远知行</b><span>强项是多场景铺开，包括 Robotaxi、Robobus、环卫、货运等。它的特点是把 L4 能力拆到多个低速/固定线路/运营型场景中商业化。</span></div>
+          </div>
+          <p class="stack-summary">判断这类公司时，不只看算法，还要看：运营城市数、真实无安全员里程、远程协助频率、单位经济模型、车辆成本、政策许可和场景复制能力。</p>
+        </article>
+      </div>
+      <div class="deep-dive">
+        <article class="deep-card">
+          <h3>L4 限定区域运营的技术栈</h3>
+          <p>L4 运营不是“把城市 NOA 做强一点”，而是一套从车端自动驾驶到云端运营的完整系统。它的目标是在一个明确 ODD 内，让车辆可以被平台安全、稳定、可审计地运营。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>ODD 与安全边界</b><span>定义能运行的城市、道路、速度、天气、时段、施工状态和接管策略。ODD 是 L4 系统的产品边界，也是安全责任边界。</span></div>
+            <div class="concept"><b>车端硬件冗余</b><span>多激光雷达、多摄像头、毫米波雷达、GNSS/IMU、车规计算平台、线控制动/转向/供电冗余，目标是传感器或执行器部分失效后仍能降级到安全状态。</span></div>
+            <div class="concept"><b>高精地图与定位</b><span>L4 通常依赖高精地图、语义地图和厘米级/车道级定位，配合实时感知识别地图变化、施工占道、临时障碍和交通管制。</span></div>
+            <div class="concept"><b>感知、预测、规划</b><span>感知识别动态/静态目标，预测判断周围交通参与者意图，规划在规则、舒适性和安全约束下生成可执行轨迹。</span></div>
+            <div class="concept"><b>最小风险策略 MRM</b><span>当系统置信度不足、传感器故障、道路超出 ODD 或远程协助不可用时，车辆必须能减速、靠边、停车或进入安全等待状态。</span></div>
+            <div class="concept"><b>远程协助</b><span>远程人员不一定直接遥控车辆，更常见是给出高层指令，比如确认绕行、解除阻塞、选择可通行车道、处理施工或临时交通指挥。</span></div>
+            <div class="concept"><b>车队运营平台</b><span>负责派单、调度、监控、充电/补能、清洁、维保、事故记录、乘客服务和异常工单。L4 公司的壁垒很大一部分在这里。</span></div>
+            <div class="concept"><b>仿真与数据闭环</b><span>把真实运营中遇到的难例回放、标注、仿真、训练、验证，再通过 OTA 更新车端模型和策略，持续降低远程协助率和异常率。</span></div>
+          </div>
+          <p class="stack-summary">外溢到量产车时，通常不是整套 L4 原封不动上车，而是把感知、预测规划、仿真验证、安全策略、数据闭环、地图/定位能力拆成可量产、可降本、可认证的模块。</p>
+        </article>
+
+        <article class="deep-card">
+          <h3>聚焦文远知行：核心技术与卖点</h3>
+          <p>文远知行的公开定位更像“多场景 L4 自动驾驶平台公司”，而不是只做单一 Robotaxi。它的卖点在于把同一套自动驾驶能力迁移到 Robotaxi、Robobus、Robovan、环卫车等多个运营型场景。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>核心技术 1：L4 自动驾驶全栈</b><span>包括多传感器融合感知、预测、规划控制、定位地图、车端计算、故障诊断、安全降级和远程协助接口。</span></div>
+            <div class="concept"><b>核心技术 2：多车型平台化</b><span>把自动驾驶系统适配到出租车、小巴、货运车、环卫车等不同线控底盘和传感器布置上，形成跨车型复用能力。</span></div>
+            <div class="concept"><b>核心技术 3：运营与远程协助</b><span>面向无人化商业运营，需要调度、监控、远程协助、异常处置、维保闭环，而不只是车端算法。</span></div>
+            <div class="concept"><b>核心技术 4：场景数据闭环</b><span>Robotaxi、Robobus、环卫、货运等场景会产生不同类型 corner case，多场景数据有助于提升泛化和安全评估能力。</span></div>
+            <div class="concept"><b>卖点 1：不押单一场景</b><span>Robotaxi 商业化慢时，可以用 Robobus、环卫、园区/固定路线、货运等更清晰 ODD 的场景承接商业落地。</span></div>
+            <div class="concept"><b>卖点 2：更适合 B 端客户</b><span>它卖的不是一个消费者 App，而是给城市运营方、公交/环卫/物流公司、主机厂和场景方的无人驾驶解决方案。</span></div>
+            <div class="concept"><b>卖点 3：L4 能力可降维</b><span>在固定线路和限定区域里打磨出的感知、规划、安全验证、远程协助和运营能力，可以外溢到量产辅助驾驶或商用车自动驾驶。</span></div>
+            <div class="concept"><b>卖点 4：政策与牌照经验</b><span>L4 商业化高度依赖地方许可、测试/示范运营资质、道路开放和安全监管经验，文远的运营经验本身就是资产。</span></div>
+          </div>
+          <p class="stack-summary">如果一句话概括文远：它的核心不是“做一套最便宜的乘用车 NOA”，而是“把 L4 自动驾驶全栈和运营能力平台化，卖给多个可定义 ODD 的商业场景”。</p>
+        </article>
+
+        <article class="deep-card">
+          <h3>文远更像特斯拉纯视觉，还是多传感器融合？</h3>
+          <p>更准确的判断是：文远不是特斯拉式纯视觉路线，而是偏 L4 安全冗余的多传感器融合路线。它的 L4 运营车更重视激光雷达、摄像头、毫米波雷达、地图定位和远程运营的组合，而不是只依赖摄像头和端到端模型。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>和特斯拉的差异</b><span>特斯拉面向大规模乘用车，追求低成本、摄像头主导、数据规模和端到端泛化；文远面向 L4 运营，优先保证 ODD 内无人化安全，所以更愿意使用激光雷达和冗余传感器。</span></div>
+            <div class="concept"><b>为什么 L4 更依赖激光雷达</b><span>Robotaxi/Robobus 需要在无人或少人监管条件下运行，激光雷达能提供稳定三维几何信息，帮助识别异形障碍、夜间目标、静态障碍和复杂路口空间。</span></div>
+            <div class="concept"><b>毫米波雷达的价值</b><span>毫米波雷达对速度测量、雨雾天气、远距离目标更有帮助。它通常不是语义理解主力，但能给安全冗余和目标运动判断提供补充。</span></div>
+            <div class="concept"><b>地图融合不是盲信地图</b><span>L4 会用高精地图和定位获得先验道路结构，但仍要用实时感知识别施工、临停车辆、锥桶、交通管制和地图变化。</span></div>
+            <div class="concept"><b>外溢到量产车会降本</b><span>外溢到乘用车或商用车时，不一定保留 L4 运营车的完整传感器数量，而是把 L4 的感知、规划、安全验证和数据闭环能力适配到 OEM 可承受的传感器配置。</span></div>
+            <div class="concept"><b>一句话判断</b><span>文远的底层思路更接近“L4 多传感器冗余 + 地图/定位 + 运营安全闭环”，不是“纯视觉大规模乘用车自学习”。</span></div>
+          </div>
+          <p class="stack-summary">所以你的理解可以改写成：文远一方面把 L4 无人驾驶运营能力外溢到量产和商业场景，另一方面仍以多传感器融合、地图定位、安全冗余和远程运营作为核心底座。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="players">
+      <div class="section-head">
+        <div>
+          <h2>主要公司与路线对比</h2>
+          <p>看公司时先分角色：整车自研、系统供应商、芯片平台、L4 技术公司、传统 Tier 1。角色不同，护城河也不同。</p>
+        </div>
+        <span class="tag">Players</span>
+      </div>
+      <div class="company-grid">
+        <article class="company-card" data-role="oem"><span class="role">整车自研</span><h3>Tesla</h3><p>纯视觉、端到端、车队数据闭环，是全球最激进的软件定义路线。</p></article>
+        <article class="company-card" data-role="tier1"><span class="role">系统方案</span><h3>华为 ADS</h3><p>多传感器融合、激光雷达、强工程交付，擅长中国复杂城市道路。</p></article>
+        <article class="company-card" data-role="oem"><span class="role">整车自研</span><h3>小鹏</h3><p>城市 NOA 起步早，从高精地图依赖走向无图和 AI 司机。</p></article>
+        <article class="company-card" data-role="oem"><span class="role">整车自研</span><h3>理想</h3><p>围绕家庭车使用场景做高速/城市 NOA，强调体验稳定和规模覆盖。</p></article>
+        <article class="company-card" data-role="chip"><span class="role">芯片平台</span><h3>Mobileye</h3><p>EyeQ 芯片、SuperVision、REM 地图和 RSS 安全模型，全球 OEM 客户广。</p></article>
+        <article class="company-card" data-role="chip"><span class="role">芯片平台</span><h3>NVIDIA</h3><p>DRIVE Orin/Thor 是高阶智驾算力底座，生态覆盖大量主流 OEM。</p></article>
+        <article class="company-card" data-role="chip"><span class="role">芯片平台</span><h3>地平线</h3><p>征程芯片和算法工具链，是中国本土量产智驾芯片代表。</p></article>
+        <article class="company-card" data-role="tier1"><span class="role">算法供应</span><h3>Momenta</h3><p>数据驱动、量产 ADAS 与 L4 技术积累并行，合作覆盖多家车企。</p></article>
+        <article class="company-card" data-role="tier1"><span class="role">算法供应</span><h3>DeepRoute.ai</h3><p>强调无图城市辅助驾驶和低成本量产方案。</p></article>
+        <article class="company-card" data-role="tier1"><span class="role">算法供应</span><h3>毫末智行</h3><p>长城体系背景，围绕数据智能和 NOH 做量产落地。</p></article>
+        <article class="company-card" data-role="l4"><span class="role">L4 运营</span><h3>百度 Apollo</h3><p>Robotaxi 和量产智驾平台两条线并行，萝卜快跑是重要运营场景。</p></article>
+        <article class="company-card" data-role="l4"><span class="role">L4 运营</span><h3>小马/文远</h3><p>Robotaxi、Robobus、货运、环卫等多场景 L4 技术和商业化探索。</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="coop">
+      <div class="section-head">
+        <div>
+          <h2>智驾公司与 OEM 合作图谱</h2>
+          <p>合作关系要拆成三类看：芯片供应、算法/软件供应、整套智驾系统交付。它们的深度和话语权完全不同。</p>
+        </div>
+        <span class="tag">Ecosystem Map</span>
+      </div>
+      <div class="coop-wrap">
+        <ul class="coop-list">
+          <li><b>华为 ADS：</b>问界、智界、享界、阿维塔等生态，偏系统级方案和深度整车协同。</li>
+          <li><b>Mobileye：</b>BMW、Volkswagen、Porsche、极氪、Nissan、Ford 等全球 OEM，偏芯片+视觉算法平台。</li>
+          <li><b>NVIDIA DRIVE：</b>Mercedes-Benz、Volvo、JLR、BYD、蔚来、小鹏、理想、极氪、小米等，偏高算力底座。</li>
+          <li><b>地平线：</b>理想部分车型、比亚迪、上汽、长安、长城、奇瑞、广汽等，偏中国本土量产芯片生态。</li>
+          <li><b>Momenta：</b>上汽/智己、奔驰中国、丰田中国、通用中国等，偏数据驱动算法和量产方案。</li>
+          <li><b>百度/小马/文远：</b>更多从 L4 Robotaxi、Robobus、商用车与车企合作外溢到量产技术。</li>
+        </ul>
+        <div class="map-panel" aria-label="合作图谱示意图">
+          <svg class="map-svg" viewBox="0 0 720 430" role="img" aria-label="智驾供应商、芯片平台、OEM 和运营场景之间的合作关系">
+            <path class="map-line strong" d="M150 85 C260 75 340 78 470 70" />
+            <path class="map-line" d="M150 85 C260 120 350 150 470 152" />
+            <path class="map-line" d="M150 85 C260 172 340 230 470 235" />
+            <path class="map-line strong" d="M150 190 C250 166 350 144 470 152" />
+            <path class="map-line" d="M150 190 C255 210 345 232 470 235" />
+            <path class="map-line" d="M150 300 C255 282 350 258 470 235" />
+            <path class="map-line strong" d="M150 300 C262 318 340 342 470 342" />
+            <rect class="map-node primary" x="42" y="45" width="150" height="80" rx="8" />
+            <text class="map-label" x="72" y="78">系统方案商</text>
+            <text class="map-sub" x="72" y="101">华为 · Momenta · DeepRoute</text>
+            <rect class="map-node chip" x="42" y="150" width="150" height="80" rx="8" />
+            <text class="map-label" x="76" y="183">芯片平台</text>
+            <text class="map-sub" x="70" y="206">NVIDIA · Mobileye · 地平线</text>
+            <rect class="map-node l4" x="42" y="260" width="150" height="80" rx="8" />
+            <text class="map-label" x="72" y="293">L4 技术公司</text>
+            <text class="map-sub" x="71" y="316">百度 · 小马 · 文远</text>
+            <rect class="map-node" x="470" y="30" width="185" height="80" rx="8" />
+            <text class="map-label" x="520" y="63">新势力/OEM</text>
+            <text class="map-sub" x="503" y="86">蔚来 · 小鹏 · 理想 · 小米 · 极氪</text>
+            <rect class="map-node" x="470" y="112" width="185" height="80" rx="8" />
+            <text class="map-label" x="512" y="145">传统车企</text>
+            <text class="map-sub" x="498" y="168">BMW · VW · Mercedes · Toyota</text>
+            <rect class="map-node" x="470" y="195" width="185" height="80" rx="8" />
+            <text class="map-label" x="506" y="228">中国自主品牌</text>
+            <text class="map-sub" x="501" y="251">比亚迪 · 长城 · 长安 · 奇瑞</text>
+            <rect class="map-node" x="470" y="302" width="185" height="80" rx="8" />
+            <text class="map-label" x="520" y="335">运营场景</text>
+            <text class="map-sub" x="510" y="358">Robotaxi · 港口 · 园区 · 货运</text>
+            <text x="292" y="110" fill="#0f766e" font-size="12" font-weight="800">整套系统交付</text>
+            <text x="284" y="188" fill="#64748b" font-size="12" font-weight="800">算力/算法/工具链</text>
+            <text x="292" y="314" fill="#b45309" font-size="12" font-weight="800">L4 经验外溢</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="database">
+      <div class="section-head">
+        <div>
+          <h2>公司/OEM 合作数据库</h2>
+          <p>这里把供应商、车企、技术路线和示例车型放在一个可筛选视图里。它不是最终定点清单，而是用来快速建立行业地图的工作台。</p>
+        </div>
+        <span class="tag">Searchable Database</span>
+      </div>
+      <div class="database-tools" aria-label="数据库筛选器">
+        <div class="db-control">
+          <label for="dbSearch">搜索公司、OEM、车型、技术关键词</label>
+          <input id="dbSearch" type="search" placeholder="例如 华为、Mobileye、无图、宝马、城市 NOA" />
+        </div>
+        <div class="db-control">
+          <label for="roleFilter">公司角色</label>
+          <select id="roleFilter"><option value="all">全部角色</option></select>
+        </div>
+        <div class="db-control">
+          <label for="routeFilter">技术路线</label>
+          <select id="routeFilter"><option value="all">全部路线</option></select>
+        </div>
+        <div class="db-control">
+          <label for="supplierFilter">供应商</label>
+          <select id="supplierFilter"><option value="all">全部供应商</option></select>
+        </div>
+        <div class="db-control">
+          <label for="oemFilter">OEM/品牌</label>
+          <select id="oemFilter"><option value="all">全部 OEM</option></select>
+        </div>
+      </div>
+      <p id="databaseStatus" class="database-status" aria-live="polite"></p>
+      <div id="databaseGrid" class="database-grid" aria-live="polite"></div>
+
+      <div class="compare-zone">
+        <div class="compare-head">
+          <div>
+            <h3>车型级对比</h3>
+            <p>勾选车型后对比传感器、算力/芯片、地图依赖、能力边界和责任级别。默认选中一组典型样本。</p>
+          </div>
+          <div class="compare-actions">
+            <button id="selectChinaModels" type="button">中国量产样本</button>
+            <button id="selectGlobalModels" type="button">全球/L3/L4 样本</button>
+            <button id="clearModelSelection" type="button">清空</button>
+          </div>
+        </div>
+        <div id="modelPicks" class="model-picks" aria-label="车型选择"></div>
+        <div class="table-scroll">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>车型/平台</th>
+                <th>OEM</th>
+                <th>智驾系统</th>
+                <th>供应商/芯片</th>
+                <th>传感器倾向</th>
+                <th>地图/路线</th>
+                <th>能力边界</th>
+                <th>责任级别</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonBody"></tbody>
+          </table>
+        </div>
+        <p class="db-footnote">注：车型级信息按公开资料和行业常见口径做知识地图示例，不替代最新年款、配置、区域法规和供应链定点核验。</p>
+      </div>
+    </section>
+
+    <section class="section" id="judge">
+      <div class="section-head">
+        <div>
+          <h2>怎么判断一家智驾公司强不强</h2>
+          <p>不要只看发布会 demo。真正的硬指标是覆盖、接管、安全冗余、数据闭环、成本和责任边界。</p>
+        </div>
+        <span class="tag">Due Diligence</span>
+      </div>
+      <div class="judge-grid">
+        <div class="judge-card"><b>ODD 覆盖</b><span>高速、城市、雨夜、施工、窄路、无保护左转、环岛是否稳定。</span></div>
+        <div class="judge-card"><b>接管率</b><span>每百公里/千公里接管次数，以及接管是否集中在危险场景。</span></div>
+        <div class="judge-card"><b>安全冗余</b><span>感知、计算、制动、转向、供电是否有备份和降级策略。</span></div>
+        <div class="judge-card"><b>数据闭环</b><span>量产车队能否采集长尾场景，并快速标注、训练、验证、OTA。</span></div>
+        <div class="judge-card"><b>成本下探</b><span>能否从高端车型下放到 15-25 万甚至更低价格带。</span></div>
+        <div class="judge-card"><b>无图能力</b><span>离开高精地图城市后是否仍有可用和一致的体验。</span></div>
+        <div class="judge-card"><b>体验一致性</b><span>每天通勤都敢用，比一次漂亮 demo 更重要。</span></div>
+        <div class="judge-card"><b>责任边界</b><span>是否清楚说明 L2/L3，不误导用户脱手、脱眼或分心。</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="learn">
+      <div class="section-head">
+        <div>
+          <h2>建议学习路径</h2>
+          <p>按这个顺序学，再看任何车企发布会时，就能分清哪些是真能力、哪些是包装词。</p>
+        </div>
+        <span class="tag">Learning Path</span>
+      </div>
+      <div class="learning">
+        <div class="learn-step"><b>01</b><span>SAE L1-L5 分级与责任边界</span></div>
+        <div class="learn-step"><b>02</b><span>传感器：摄像头、雷达、激光雷达</span></div>
+        <div class="learn-step"><b>03</b><span>BEV、Occupancy、车道拓扑</span></div>
+        <div class="learn-step"><b>04</b><span>预测、规划、控制与舒适性</span></div>
+        <div class="learn-step"><b>05</b><span>数据闭环、仿真和 OTA</span></div>
+        <div class="learn-step"><b>06</b><span>功能安全、SOTIF、法规认证</span></div>
+        <div class="learn-step"><b>07</b><span>公司路线、车型体验和合作生态</span></div>
+      </div>
+    </section>
+
+    <section class="callout">
+      <div>
+        <h2>一句话记住核心区别</h2>
+        <p>L2++ 解决的是“车开得像不像老司机”；L3/L4 解决的是“系统能不能在承诺条件内承担驾驶责任”。这就是智能驾驶从体验竞争走向安全和法规竞争的分水岭。</p>
+      </div>
+      <span class="tag">L2++ ≠ L3</span>
+    </section>
+  </main>
+  <script>
+    const cooperationData = [
+      { name: "华为 ADS", role: "系统方案商", route: "多传感器融合 + 激光雷达", suppliers: ["华为"], oems: ["问界", "智界", "享界", "阿维塔"], models: ["问界 M9", "智界 S7", "阿维塔 12"], tech: ["城区 NCA", "激光雷达", "BEV", "Occupancy", "端到端规划"], summary: "偏系统级交付和深度整车协同，强项是中国复杂城市道路、高频 OTA 和软硬件一体工程。" },
+      { name: "Mobileye", role: "芯片/算法平台", route: "视觉平台 + 安全模型", suppliers: ["Mobileye"], oems: ["BMW", "宝马", "Volkswagen", "Porsche", "极氪", "Nissan", "Ford"], models: ["极氪 001", "BMW 7 系相关项目", "Porsche/VW 项目"], tech: ["EyeQ", "SuperVision", "REM 地图", "RSS"], summary: "以 EyeQ 芯片、视觉算法、REM 地图和 RSS 安全模型形成全球 OEM 生态。" },
+      { name: "NVIDIA DRIVE", role: "芯片/算力平台", route: "高算力 SoC + 软件生态", suppliers: ["NVIDIA"], oems: ["Mercedes-Benz", "Volvo", "JLR", "BYD", "蔚来", "小鹏", "理想", "极氪", "小米"], models: ["蔚来 ET7", "小鹏 G9/X9", "理想 L 系 AD Max", "小米 SU7 Max"], tech: ["DRIVE Orin", "DRIVE Thor", "DriveOS", "仿真工具链"], summary: "更像高阶智驾算力底座，最终体验取决于 OEM 或算法伙伴的软件栈。" },
+      { name: "地平线 Horizon Robotics", role: "本土芯片平台", route: "车规芯片 + 工具链", suppliers: ["地平线"], oems: ["理想", "比亚迪", "上汽", "长安", "长城", "奇瑞", "广汽"], models: ["理想部分车型", "多家自主品牌量产项目"], tech: ["征程芯片", "量产感知", "工具链", "成本下探"], summary: "优势在中国本土量产生态和成本/供应链适配，适合中高阶辅助驾驶规模化。" },
+      { name: "Momenta", role: "算法/量产方案", route: "数据驱动 + L4 技术下放", suppliers: ["Momenta"], oems: ["上汽", "智己", "奔驰中国", "丰田中国", "通用中国"], models: ["智己 LS6/L7 相关项目", "奔驰/丰田/通用中国合作项目"], tech: ["数据闭环", "端到端", "量产 ADAS", "L4 积累"], summary: "用量产数据和 L4 经验结合，定位算法供应商和高阶智驾软件伙伴。" },
+      { name: "DeepRoute.ai", role: "算法/量产方案", route: "无图城市 NOA + 低成本", suppliers: ["DeepRoute.ai"], oems: ["多家中国 OEM"], models: ["量产合作车型需按项目核验"], tech: ["无图", "城市 NOA", "BEV", "成本控制"], summary: "强调低成本城市 NOA 和无图泛化，适合看作算法公司 Tier 1 化样本。" },
+      { name: "百度 Apollo", role: "L4 技术/运营", route: "Robotaxi + 量产平台", suppliers: ["百度 Apollo"], oems: ["极越/集度生态", "Robotaxi 运营车队", "多家合作车企"], models: ["萝卜快跑车队", "极越相关车型"], tech: ["Robotaxi", "高精地图", "远程运营", "Apollo 平台"], summary: "Robotaxi 运营和量产平台并行，强项在 L4 场景运营、地图和自动驾驶栈积累。" },
+      { name: "小马智行 / 文远知行", role: "L4 技术/运营", route: "限定区域无人化", suppliers: ["小马智行", "文远知行"], oems: ["丰田", "广汽", "一汽", "宇通", "博世"], models: ["Robotaxi", "Robobus", "Robotruck", "环卫车"], tech: ["L4", "远程协助", "车队运营", "多场景商业化"], summary: "从 Robotaxi、Robobus、货运和环卫等场景切入，技术重点是 ODD 内安全运营。" },
+      { name: "Tesla FSD", role: "整车自研", route: "纯视觉 + 端到端 + 大数据", suppliers: ["Tesla 自研"], oems: ["Tesla"], models: ["Model 3", "Model Y", "Model S/X", "Cybertruck"], tech: ["纯视觉", "端到端", "车队数据", "FSD"], summary: "依赖大规模车队数据和自研算法，成本结构清晰，但监管和责任边界仍按地区推进。" },
+      { name: "Mercedes-Benz Drive Pilot", role: "OEM L3 量产", route: "冗余系统 + 法规认证", suppliers: ["Mercedes-Benz", "传统 Tier 1 生态"], oems: ["Mercedes-Benz"], models: ["S-Class", "EQS"], tech: ["L3", "ODD", "冗余", "最小风险策略"], summary: "重点不是城市 NOA 花活，而是在明确 ODD 内完成法规认证和责任边界转移。" }
+    ];
+
+    const modelData = [
+      { id: "tesla-model-y", model: "Tesla Model Y / Model 3", oem: "Tesla", system: "FSD / Autopilot", supplier: "Tesla 自研芯片/算法", sensors: "摄像头为主，强调纯视觉路线", map: "弱高精地图依赖，依靠视觉感知和数据闭环", capability: "高速/城市辅助驾驶能力持续 OTA；驾驶员监督仍是核心边界", level: "通常按 L2 监管口径理解", group: "global" },
+      { id: "aito-m9", model: "问界 M9", oem: "赛力斯/问界", system: "华为 ADS", supplier: "华为系统方案", sensors: "多摄像头 + 毫米波 + 激光雷达高配路线", map: "从有图走向无图/轻地图城市 NCA", capability: "城区/高速 NCA、泊车、主动安全；体验强但仍需驾驶员监督", level: "L2++ 行业口径，法规上通常仍是 L2", group: "china" },
+      { id: "xpeng-x9", model: "小鹏 X9 / G9 / P7i 高配", oem: "小鹏", system: "XNGP / AI 司机", supplier: "小鹏自研 + NVIDIA Orin 等平台", sensors: "摄像头、毫米波、激光雷达按车型配置不同", map: "从高精地图城市覆盖走向无图化", capability: "高速/城市 NOA、自动泊车、端到端能力推进", level: "L2++ 行业口径", group: "china" },
+      { id: "li-l9", model: "理想 L 系 / MEGA AD Max", oem: "理想", system: "AD Max", supplier: "理想自研 + NVIDIA Orin/地平线等生态按车型区分", sensors: "高配含激光雷达，多传感器融合", map: "高速/城市 NOA，持续推进无图和端到端", capability: "家庭用车场景下强调可用性、舒适性和覆盖率", level: "L2++ 行业口径", group: "china" },
+      { id: "nio-et7", model: "蔚来 ET7 / ES8 / NT2 平台", oem: "蔚来", system: "NAD / NOP+", supplier: "蔚来自研 + NVIDIA Orin", sensors: "Aquila 高配感知体系，含激光雷达", map: "高速/城区增强辅助，地图依赖逐步降低", capability: "高配硬件冗余和订阅式智驾体验", level: "L2++ 行业口径", group: "china" },
+      { id: "xiaomi-su7", model: "小米 SU7 Max", oem: "小米汽车", system: "Xiaomi Pilot Max", supplier: "小米自研 + 高算力平台", sensors: "高配激光雷达 + 多摄像头 + 雷达", map: "城市 NOA 和泊车场景扩展", capability: "新进入者，重点看数据闭环速度和长期 OTA", level: "L2++ 行业口径", group: "china" },
+      { id: "zeekr-001", model: "极氪 001 / 009 部分年款", oem: "极氪", system: "NZP / SuperVision 相关方案", supplier: "Mobileye 或 NVIDIA 生态按年款区分", sensors: "视觉为主或多传感器方案按配置区分", map: "高速/城市辅助能力按平台版本演进", capability: "典型的 OEM 多平台切换样本，需按年款核验", level: "L2/L2++", group: "china" },
+      { id: "mercedes-s", model: "Mercedes-Benz S-Class / EQS", oem: "Mercedes-Benz", system: "Drive Pilot", supplier: "Mercedes-Benz + Tier 1/芯片生态", sensors: "多传感器 + 冗余系统，面向认证设计", map: "明确 ODD，限定道路/速度/天气/区域", capability: "ODD 内有条件自动驾驶，超出条件请求接管或降级", level: "L3", group: "global" },
+      { id: "bmw-l3", model: "BMW 7 Series 相关 L3 项目", oem: "BMW/宝马", system: "Personal Pilot L3 / Highway Assistant 生态", supplier: "BMW + Mobileye/Qualcomm 等合作生态按项目区分", sensors: "多传感器与冗余设计，按区域法规配置", map: "明确 ODD，主要面向高速/拥堵等限定场景", capability: "部分市场推进 L3，高阶 L2 与 L3 需按市场区分", level: "L2+/L3 按区域配置", group: "global" },
+      { id: "waymo-ipace", model: "Waymo Jaguar I-PACE / Zeekr 平台", oem: "Waymo 运营车队", system: "Waymo Driver", supplier: "Waymo 自研自动驾驶系统", sensors: "激光雷达、摄像头、毫米波等高冗余组合", map: "高精地图 + 限定运营区域 + 远程运营", capability: "指定城市/区域 Robotaxi 无人化运营", level: "L4 ODD 内", group: "global" }
+    ];
+
+    const databaseGrid = document.getElementById("databaseGrid");
+    const databaseStatus = document.getElementById("databaseStatus");
+    const searchInput = document.getElementById("dbSearch");
+    const roleFilter = document.getElementById("roleFilter");
+    const routeFilter = document.getElementById("routeFilter");
+    const supplierFilter = document.getElementById("supplierFilter");
+    const oemFilter = document.getElementById("oemFilter");
+    const modelPicks = document.getElementById("modelPicks");
+    const comparisonBody = document.getElementById("comparisonBody");
+    const selectedModelIds = new Set(["aito-m9", "xpeng-x9", "tesla-model-y", "mercedes-s"]);
+
+    function uniqueSorted(values) {
+      return Array.from(new Set(values.filter(Boolean))).sort((first, second) => first.localeCompare(second, "zh-Hans-CN"));
+    }
+
+    function fillSelect(selectElement, values) {
+      values.forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        selectElement.appendChild(option);
+      });
+    }
+
+    function allText(item) {
+      return [item.name, item.role, item.route, item.summary, ...item.suppliers, ...item.oems, ...item.models, ...item.tech].join(" ").toLowerCase();
+    }
+
+    function matchesFilter(item) {
+      const query = searchInput.value.trim().toLowerCase();
+      return (!query || allText(item).includes(query))
+        && (roleFilter.value === "all" || item.role === roleFilter.value)
+        && (routeFilter.value === "all" || item.route === routeFilter.value)
+        && (supplierFilter.value === "all" || item.suppliers.includes(supplierFilter.value))
+        && (oemFilter.value === "all" || item.oems.includes(oemFilter.value));
+    }
+
+    function pill(text, styleName = "") {
+      return `<span class="db-pill ${styleName}">${text}</span>`;
+    }
+
+    function renderDatabase() {
+      const filteredItems = cooperationData.filter(matchesFilter);
+      databaseStatus.textContent = `当前显示 ${filteredItems.length} / ${cooperationData.length} 条合作与技术路线记录。`;
+      databaseGrid.innerHTML = filteredItems.map((item) => `
+        <article class="db-card">
+          <div class="db-card-head"><h3>${item.name}</h3>${pill(item.role, "primary")}</div>
+          <p>${item.summary}</p>
+          <div class="db-pill-row">${pill(item.route, "blue")}${item.tech.slice(0, 3).map((techItem) => pill(techItem)).join("")}</div>
+          <p><strong>OEM/品牌：</strong>${item.oems.join("、")}</p>
+          <p><strong>示例车型/场景：</strong>${item.models.join("、")}</p>
+        </article>
+      `).join("");
+    }
+
+    function renderModelPicks() {
+      modelPicks.innerHTML = modelData.map((item) => `
+        <label class="model-pick">
+          <input type="checkbox" value="${item.id}" ${selectedModelIds.has(item.id) ? "checked" : ""} />
+          <span>${item.model} · ${item.system}</span>
+        </label>
+      `).join("");
+      modelPicks.querySelectorAll("input").forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) selectedModelIds.add(checkbox.value);
+          else selectedModelIds.delete(checkbox.value);
+          renderComparison();
+        });
+      });
+    }
+
+    function renderComparison() {
+      const selectedModels = modelData.filter((item) => selectedModelIds.has(item.id));
+      if (!selectedModels.length) {
+        comparisonBody.innerHTML = `<tr><td colspan="8">请选择至少一个车型用于对比。</td></tr>`;
+        return;
+      }
+      comparisonBody.innerHTML = selectedModels.map((item) => `
+        <tr>
+          <td>${item.model}</td><td>${item.oem}</td><td>${item.system}</td><td>${item.supplier}</td>
+          <td>${item.sensors}</td><td>${item.map}</td><td>${item.capability}</td><td>${item.level}</td>
+        </tr>
+      `).join("");
+    }
+
+    function setModelSelection(groupName) {
+      selectedModelIds.clear();
+      modelData.filter((item) => item.group === groupName).slice(0, 5).forEach((item) => selectedModelIds.add(item.id));
+      renderModelPicks();
+      renderComparison();
+    }
+
+    fillSelect(roleFilter, uniqueSorted(cooperationData.map((item) => item.role)));
+    fillSelect(routeFilter, uniqueSorted(cooperationData.map((item) => item.route)));
+    fillSelect(supplierFilter, uniqueSorted(cooperationData.flatMap((item) => item.suppliers)));
+    fillSelect(oemFilter, uniqueSorted(cooperationData.flatMap((item) => item.oems)));
+    [searchInput, roleFilter, routeFilter, supplierFilter, oemFilter].forEach((control) => {
+      control.addEventListener("input", renderDatabase);
+      control.addEventListener("change", renderDatabase);
+    });
+    document.getElementById("selectChinaModels").addEventListener("click", () => setModelSelection("china"));
+    document.getElementById("selectGlobalModels").addEventListener("click", () => setModelSelection("global"));
+    document.getElementById("clearModelSelection").addEventListener("click", () => {
+      selectedModelIds.clear();
+      renderModelPicks();
+      renderComparison();
+    });
+    renderDatabase();
+    renderModelPicks();
+    renderComparison();
+  </script>
+</body>
+</html>
