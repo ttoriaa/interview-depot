@@ -1367,6 +1367,20 @@
           </div>
           <p class="stack-summary">判断一家公司技术宣传时，可以问：它是在做空间表达升级、障碍物表达升级、规划决策升级，还是在做语义理解和动作推理升级。</p>
         </article>
+
+        <article class="deep-card">
+          <h3>VLA 技术实现：三大核心模块</h3>
+          <p>VLA 可以理解为把自动驾驶从“识别和规划”进一步推向“理解指令、推理场景、生成动作”。工程上通常由视觉编码器、语言处理器和动作解码器组成。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>1. 视觉编码器 Vision Encoder</b><span>负责把原始图像和传感器数据转换为潜在表征。常见做法是使用 DINOv2、CLIP 等大型自监督模型作为骨干网络，再结合 BEV 投影，或通过点云编码器、PointVLA 类方法融合 3D 信息。</span></div>
+            <div class="concept"><b>2. 语言处理器 Language Processor</b><span>负责处理自然语言指令和高层语义知识。通常使用 LLaMA、GPT 等预训练语言模型，并通过指令微调、LoRA 等轻量化微调方式，让模型适配自动驾驶领域知识、交通规则和场景推理。</span></div>
+            <div class="concept"><b>3. 动作解码器 Action Decoder</b><span>负责把融合后的视觉、语言和状态表征转换为最终控制输出，例如轨迹点、速度、转向、加减速或高层驾驶动作。</span></div>
+            <div class="concept"><b>动作解码方式 A：自回归令牌器</b><span>把连续轨迹点或离散动作，如“加速”“减速”“左转”“变道”，表示成 token，并像语言模型生成文本一样逐步生成动作序列。</span></div>
+            <div class="concept"><b>动作解码方式 B：扩散模型头</b><span>基于融合后的多模态特征，通过采样生成连续控制信号或候选轨迹。优势是可以表达多种可能动作，再由安全约束或评分器选择。</span></div>
+            <div class="concept"><b>动作解码方式 C：分层控制器</b><span>高阶语言规划器先生成子目标，如“绕过施工区域”“在前方安全变道”“准备超车”，再由低阶 PID 或 MPC 控制器执行具体轨迹和车辆控制。</span></div>
+          </div>
+          <p class="stack-summary">一句话理解：Vision Encoder 负责“看懂世界”，Language Processor 负责“理解意图和规则”，Action Decoder 负责“把理解变成可执行驾驶动作”。</p>
+        </article>
       </div>
       <div class="matrix">
         <article class="route-card">
