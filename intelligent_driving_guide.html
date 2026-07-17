@@ -1341,6 +1341,33 @@
         </div>
         <span class="tag">Strategy Matrix</span>
       </div>
+      <div class="deep-dive">
+        <article class="deep-card">
+          <h3>智能驾驶算法范式演进时间线</h3>
+          <p>这条线可以理解为：行业从“模块化规则工程”走向“统一空间表达”，再走向“统一神经网络决策”，最后开始尝试用大模型理解复杂场景和驾驶意图。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>2022 前：感知、预测、决策分模块</b><span>典型架构是感知识别目标，预测判断周围车辆/行人怎么动，决策规划决定自己怎么开。优点是可解释、可调试；缺点是模块误差会层层传递，复杂场景规则维护成本高。</span></div>
+            <div class="concept"><b>2022：BEV 感知成为主流</b><span>BEV 把多摄像头/多传感器信息统一到鸟瞰空间，让车以俯视视角理解道路、目标和可行驶区域。它解决了多视角融合和空间表达问题，是城市 NOA 普及的重要基础。</span></div>
+            <div class="concept"><b>2023：Occupancy 感知兴起</b><span>Occupancy 把三维空间切成体素/网格，判断每个区域是否被占用。它不强依赖物体类别，能更好处理异形障碍物、施工物、路沿、未知障碍和可通行空间。</span></div>
+            <div class="concept"><b>2024：端到端开始量产落地</b><span>端到端把感知、预测、规划中的部分环节交给神经网络联合学习，减少手写规则和模块接口损失。量产里通常不是完全黑盒，而是“神经网络主导 + 安全规则兜底”。</span></div>
+            <div class="concept"><b>2025：VLA / VLM / WA 成为新热点</b><span>VLM 让车理解图像和语言语义，VLA 进一步把视觉、语言和动作连接起来，WA 常被用来指 World Action / World Agent 类方向。核心目标是让系统理解复杂交通语境、推理意图，并生成更接近人类驾驶的动作策略。</span></div>
+          </div>
+          <p class="stack-summary">一句话总结：BEV 统一“空间”，Occupancy 强化“可通行/不可通行”，端到端统一“感知到规划”，VLA/VLM/WA 则试图统一“理解、推理和动作”。</p>
+        </article>
+
+        <article class="deep-card">
+          <h3>这些热点分别解决什么问题</h3>
+          <p>每一代技术热点都不是凭空出现，而是在解决上一代系统的瓶颈。理解它们的关键，是看它们把哪一类工程问题从规则系统搬进了学习系统。</p>
+          <div class="concept-grid">
+            <div class="concept"><b>模块化瓶颈</b><span>感知、预测、规划分开做时，每个模块看似清楚，但复杂交互场景下容易出现接口损失：感知框偏一点，预测就错一点，规划再保守一点。</span></div>
+            <div class="concept"><b>BEV 的价值</b><span>把不同摄像头和传感器放到同一个坐标系里，规划系统不用再理解一堆分散图像，而是直接面对统一的道路空间。</span></div>
+            <div class="concept"><b>Occupancy 的价值</b><span>驾驶最关心的不一定是“这是什么”，而是“这里能不能走”。Occupancy 对未知障碍、异形物体和复杂道路边界更友好。</span></div>
+            <div class="concept"><b>端到端的价值</b><span>让模型直接从大量驾驶数据里学习“场景到轨迹”的映射，减少人工规则，但仍需要安全约束、仿真验证和可解释监控。</span></div>
+            <div class="concept"><b>VLA / VLM / WA 的价值</b><span>面向更高层语义理解，比如交警手势、施工提示牌、临时绕行、礼让意图、复杂社交博弈，让车不仅“看见”，还要“理解为什么这样开”。</span></div>
+          </div>
+          <p class="stack-summary">判断一家公司技术宣传时，可以问：它是在做空间表达升级、障碍物表达升级、规划决策升级，还是在做语义理解和动作推理升级。</p>
+        </article>
+      </div>
       <div class="matrix">
         <article class="route-card">
           <h3>纯视觉/少传感器 + 大数据</h3>
